@@ -1,0 +1,54 @@
+#include <stdio.h>
+
+// Function to find the maximum value of items that can be loaded into the container
+int containerLoader(int weights[], int values[], int n, int capacity) {
+    int dp[n + 1][capacity + 1];
+
+    // Build the DP table
+    for (int i = 0; i <= n; i++) {
+        for (int w = 0; w <= capacity; w++) {
+            if (i == 0 || w == 0) {
+                dp[i][w] = 0;  // Base case: no items or zero capacity
+            } else if (weights[i - 1] <= w) {
+                // Max of including or excluding the current item
+                dp[i][w] = (values[i - 1] + dp[i - 1][w - weights[i - 1]] > dp[i - 1][w])
+                           ? values[i - 1] + dp[i - 1][w - weights[i - 1]]
+                           : dp[i - 1][w];
+            } else {
+                dp[i][w] = dp[i - 1][w];  // Exclude the current item
+            }
+        }
+    }
+
+    // Return the maximum value that can be loaded
+    return dp[n][capacity];
+}
+
+int main() {
+    int n, capacity;
+
+    // Input the number of items
+    printf("Enter the number of items: ");
+    scanf("%d", &n);
+
+    int weights[n], values[n];
+
+    // Input the weights and values of the items
+    printf("Enter the weights and values of the items:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Item %d - Weight: ", i + 1);
+        scanf("%d", &weights[i]);
+        printf("Item %d - Value: ", i + 1);
+        scanf("%d", &values[i]);
+    }
+
+    // Input the capacity of the container
+    printf("Enter the capacity of the container: ");
+    scanf("%d", &capacity);
+
+    // Compute the maximum value that can be loaded into the container
+    int maxValue = containerLoader(weights, values, n, capacity);
+    printf("Maximum value that can be loaded into the container: %d\n", maxValue);
+
+    return 0;
+}

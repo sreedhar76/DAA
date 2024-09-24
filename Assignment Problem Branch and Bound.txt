@@ -1,0 +1,127 @@
+Skip to content
+Navigation Menu
+Product
+Solutions
+Resources
+Open Source
+Enterprise
+Pricing
+
+Search or jump to...
+Sign in
+Sign up
+harshitha345
+/
+CSA06-DAA
+Public
+Code
+Issues
+Pull requests
+Actions
+Projects
+Security
+Insights
+Commit
+Create Assignment Problem Branch and Bound
+ main
+@harshitha345
+harshitha345 committed 1 hour ago 
+1 parent d0c338d
+commit dc68c0d
+Showing 1 changed file with 78 additions and 0 deletions.
+ 78 changes: 78 additions & 0 deletions78  
+Assignment Problem Branch and Bound
+Original file line number	Diff line number	Diff line change
+@@ -0,0 +1,78 @@
+#include <stdio.h>
+#include <limits.h>
+
+// Define the number of agents/tasks
+#define N 4
+
+// Function to find the minimum value in a row
+int findMinInRow(int costMatrix[N][N], int row, int assigned[N]) {
+    int min = INT_MAX;
+    for (int j = 0; j < N; j++) {
+        if (!assigned[j] && costMatrix[row][j] < min)
+            min = costMatrix[row][j];
+    }
+    return min;
+}
+
+// Function to find the minimum value in a column
+int findMinInCol(int costMatrix[N][N], int col, int assigned[N]) {
+    int min = INT_MAX;
+    for (int i = 0; i < N; i++) {
+        if (!assigned[i] && costMatrix[i][col] < min)
+            min = costMatrix[i][col];
+    }
+    return min;
+}
+
+// Calculate lower bound
+int calculateBound(int costMatrix[N][N], int assigned[N]) {
+    int bound = 0;
+    for (int i = 0; i < N; i++) {
+        if (!assigned[i]) {
+            bound += findMinInRow(costMatrix, i, assigned);
+        }
+    }
+    return bound;
+}
+
+// Branch and Bound function to find the minimum cost assignment
+void solveAssignmentProblem(int costMatrix[N][N], int assigned[N], int currentAgent, int currentCost, int *minCost) {
+    if (currentAgent == N) {
+        if (currentCost < *minCost) {
+            *minCost = currentCost;
+        }
+        return;
+    }
+
+    for (int i = 0; i < N; i++) {
+        if (!assigned[i]) {
+            assigned[i] = 1;  // Mark task i as assigned
+            int tempCost = currentCost + costMatrix[currentAgent][i];
+
+            if (tempCost + calculateBound(costMatrix, assigned) < *minCost) {
+                solveAssignmentProblem(costMatrix, assigned, currentAgent + 1, tempCost, minCost);
+            }
+
+            assigned[i] = 0;  // Unmark task i for backtracking
+        }
+    }
+}
+
+int main() {
+    // Example cost matrix
+    int costMatrix[N][N] = {
+        {9, 2, 7, 8},
+        {6, 4, 3, 7},
+        {5, 8, 1, 8},
+        {7, 6, 9, 4}
+    };
+
+    int assigned[N] = {0};  // Keeps track of assigned tasks
+    int minCost = INT_MAX;   // Minimum cost initialized to a large value
+
+    solveAssignmentProblem(costMatrix, assigned, 0, 0, &minCost);
+
+    printf("The minimum cost of assignment is: %d\n", minCost);
+
+    return 0;
+}
+0 comments on commit dc68c0d
+Please sign in to comment.
+Footer
+© 2024 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
+Security
+Status
+Docs
+Contact
+Manage cookies
+Do not share my personal information
+Create Assignment Problem Branch and Bound · harshitha345/CSA06-DAA@dc68c0d · GitHub
